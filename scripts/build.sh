@@ -14,6 +14,12 @@ if [ ! -d "$src/.git" ]; then
   git clone --depth 1 --branch "$PYODIDE_VERSION" https://github.com/pyodide/pyodide.git "$src"
 fi
 
+if ! command -v python3.14 >/dev/null; then
+  mkdir -p "$work/bin"
+  ln -sf "$(command -v python3)" "$work/bin/python3.14"
+  export PATH="$work/bin:$PATH"
+fi
+
 make -C "$src" all-but-packages -j"$(nproc)"
 
 for file in pyodide.asm.mjs pyodide.asm.wasm pyodide.js python_stdlib.zip; do
