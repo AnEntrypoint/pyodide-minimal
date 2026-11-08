@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.14'
       - name: Install autotools
-        run: sudo apt-get update && sudo apt-get install -y autoconf automake libtool-bin
+        run: sudo apt-get update && sudo apt-get install -y autoconf automake libtool libtool-bin
       - name: Build minimal Pyodide
         run: scripts/build.sh
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
