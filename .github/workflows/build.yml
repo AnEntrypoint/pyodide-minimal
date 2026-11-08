@@ -17,6 +17,8 @@ jobs:
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: '22'
+      - name: Install autotools
+        run: sudo apt-get update && sudo apt-get install -y autoconf automake libtool-bin
       - name: Build minimal Pyodide
         run: scripts/build.sh
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa

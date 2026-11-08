@@ -26,4 +26,4 @@ curl -fsSL -o "$work/packages.tar.gz" "$PACKAGES_URL"
 curl -fsSL -o "$work/pyodide-lock.json" "$LOCK_URL"
 python3 "$root/scripts/select_packages.py" "$work/pyodide-lock.json" "$root/packages.txt" "$work/packages.tar.gz" "$dist"
 
-node "$root/scripts/compress.mjs" "$dist"
+node "$root/scripts/bundle.mjs" "$dist" "$dist/pyodide-minimal.br"
