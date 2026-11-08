@@ -1,13 +1,13 @@
 # pyodide-minimal
 
-A minimal Pyodide distribution, built from the upstream tag pinned in `pins.env` (314.0.7, CPython 3.14.2, Emscripten 5.0.3).
+A minimal Pyodide distribution for the browser, published as one Brotli-compressed file.
 
-The build keeps only what the browser runtime needs, plus the packages that carry freetype, and publishes everything as one Brotli-compressed file.
+The runtime comes from Pyodide 314.0.7 (CPython 3.14.2). Pyodide publishes that core as a release tarball, so this repository repacks it instead of compiling CPython in CI.
 
 ## What ships
 
-- Core runtime from `make all-but-packages`: `pyodide.asm.mjs`, `pyodide.asm.wasm`, `pyodide.js`, `python_stdlib.zip`.
-- sqlite3: the runtime links libsqlite3 (`-lsqlite3` in upstream `Makefile.envs`), and upstream removes the Python `sqlite3` package from the stdlib zip. `scripts/keep_sqlite3.py` appends it back, and the build fails if it is missing.
+- Core runtime from `pyodide-core-314.0.7.tar.bz2`: `pyodide.asm.mjs`, `pyodide.asm.wasm`, `pyodide.js`, `pyodide.mjs`, `python_stdlib.zip`.
+- sqlite3: `scripts/verify_sqlite3.py` checks that `sqlite3/` is in the stdlib zip, and the build fails if it is missing. The release runtime links libsqlite3, so the module is kept.
 - freetype: shipped inside the `matplotlib`, `pillow` and `fonttools` packages listed in `packages.txt`, with their dependency closure taken from the pyodide-recipes lockfile.
 - `pyodide-lock.json` restricted to the selected packages.
 
@@ -29,12 +29,12 @@ GitHub Pages does not apply Brotli content encoding to this file, so the consume
 
     scripts/build.sh
 
-The script clones upstream Pyodide at `PYODIDE_VERSION`, runs `make all-but-packages`, takes the package archive and lockfile from the pyodide-recipes release in `pins.env`, and writes `dist/pyodide-minimal.br`. The build needs autoconf, automake and libtool; CI installs them.
+The script downloads the core tarball, the pyodide-recipes package archive and lockfile (URLs pinned in `pins.env`), and writes `dist/pyodide-minimal.br`. It needs only curl, tar, python3 and node.
 
 ## CI
 
-The workflow in `.github/workflows/build.yml` runs on pushes to main and on manual dispatch. It builds with `scripts/build.sh` and deploys `dist/` to GitHub Pages. The workflow does not run tests or other automated checks; checks are run by hand.
+The workflow in `.github/workflows/build.yml` runs on pushes to main and on manual dispatch. It runs `scripts/build.sh` and deploys `dist/` to GitHub Pages. The workflow does not run tests or other automated checks; checks are run by hand.
 
 ## Updating the pin
 
-Change `PYODIDE_VERSION`, `PACKAGES_URL` and `LOCK_URL` together in `pins.env`, using the pyodide-recipes release that matches the Pyodide tag.
+Change `PYODIDE_VERSION`, `CORE_URL`, `PACKAGES_URL` and `LOCK_URL` together in `pins.env`, using the Pyodide release and the pyodide-recipes release that match.
